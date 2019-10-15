@@ -1,10 +1,10 @@
-const session = require('koa-session');
+const session = require('koa-generic-session');
 const Koa = require('koa');
 const app = new Koa();
 const static = require('koa-static');
+const flash = require('koa-connect-flash');
 const path = require('path');
 const koaBody = require('koa-body');
-const flash = require('connect-flash');
 const config = require('./config');
 
 const Pug = require('koa-pug') ;
@@ -22,13 +22,20 @@ require('./engine');
 const router = require('./routers');
 
 app.use(static('./public'));
-app.use(koaBody());
-app.use(session(config.session, app))
-app.use(router.routes())
-app.use(router.allowedMethods());
-app.use(flash());
 
+app.use(koaBody({
+	formidable: {
+		uploadDir: 'public/images/products',
+	},
+	multipart: true,
+}));
+
+app.keys = ['keys'];
+app.use(session(config.session, app));
+app.use(flash());
+app.use(router.routes());
+app.use(router.allowedMethods());
 
 app.listen(3000, () => {
 	console.log('Server running on https://localhost:3000');
-})
+});

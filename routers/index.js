@@ -1,100 +1,85 @@
 const Router = require('koa-router');
 const router = new Router();
 const koaBody = require('koa-body');
-const multer  = require("multer");
+/*const koaBodyImages = require('koa-body-images');
+const options = {fromKeys: ["public/images/products"], types: ["jpeg", "png"], multiples: true};*/
 const ENGINE = global.ENGINE;
-
-const storage = multer.diskStorage({
-	destination : ( req, file, cb ) =>{
-		cb(null, "public/images/products");
-	},
-	filename: (req, file, cb) =>{
-		cb(null, file.originalname);
-	}	
-});
-
-const upload = multer({
-	storage : storage,
-	limits: {fieldSize: 2 * 1024 * 1024},
-});
 
 /* GET home page. */
 router.get('/', async (ctx) =>  {
-	console.log(1111)
-	ENGINE.emit('pages/home', ctx.request)
-		.then( data => {
-			console.log(3333333)
+	await ENGINE.emit('pages/home', ctx.request)
+		.then( async data => {
 			let {products, skills, social} = data;
-			//let msgsemail = req.flash('msgsemail')[0] || null;
-			console.log(555)
-			ctx.render('pages/index', { 
+			let msgsemail = ctx.flash('msgsemail')[0] || null;
+			await ctx.render('pages/index', { 
 				products,
 				skills,
 				social,
-				//msgsemail
+				msgsemail
 			});			
 		})
-		.catch(error => ctx.render('error', {message: error.message}))
+		.catch(async error => await ctx.render('error', {message: error.message}))
 });
 
-router.post('/', function(req, res, next) {
-	ENGINE.emit('post/message', req.body)
-		.then(data => {
-			req.flash('msgsemail', data.msgsemail)
-			res.redirect('/');
+router.post('/', async (ctx) => {
+	await ENGINE.emit('post/message', ctx.request.body)
+		.then(async data => {
+			ctx.flash('msgsemail', data.msgsemail)
+			await ctx.redirect('/');
 		})
-		.catch(error => res.render('error', {message: error.message}))
+		.catch(async error => await ctx.render('error', {message: error.message}))
 });
 
 //администрирование
-router.get('/admin', function(req, res, next) {
-	let msgskill = req.flash('msgskill')[0] || null;
-	let msgfile = req.flash('msgfile')[0] || null;
-  res.render('pages/admin.pug', {msgskill, msgfile});
+router.get('/admin', async (ctx) => {
+	let msgskill = ctx.flash('msgskill')[0] || null;
+	let msgfile = ctx.flash('msgfile')[0] || null;
+  await ctx.render('pages/admin.pug', {msgskill, msgfile});
 });
 
 //Загрузка фотографии
-router.post('/admin/upload', upload.single('photo'), function(req, res, next) {
-	ENGINE.emit('/admin/upload', req)
-		.then(data => {
-			req.flash('msgfile', data.msgfile);
-			res.redirect('/admin');
+router.post('/admin/upload', async (ctx) => {
+	console.log(5555)
+	await ENGINE.emit('/admin/upload', ctx.request)
+		.then(async data => {
+			ctx.flash('msgfile', data.msgfile);
+			await ctx.redirect('/admin');
 		})
-		.catch(error => res.render('error', {message: error.message}))
+		.catch(async error => await res.render('error', {message: error.message}))
 });
 
 //Загрузка скилов
-router.post('/admin/skills', function(req, res, next) {
-	ENGINE.emit('/admin/skills', req.body)
-		.then(data => {
-			req.flash('msgskill', data.msgskill);
-			res.redirect('/admin');
+router.post('/admin/skills', async (ctx) => {
+	await ENGINE.emit('/admin/skills', ctx.request.body)
+		.then(async data => {
+			ctx.flash('msgskill', data.msgskill);
+			await ctx.redirect('/admin');
 		})
-		.catch(error => res.render('error', {message: error.message}))
+		.catch(async error => await ctx.render('error', {message: error.message}));
 });
 
 //логирование
-router.get('/login', function(req, res, next) {
-	ENGINE.emit('login/social', req)
-		.then(data => {
+router.get('/login', async (ctx) => {
+	await ENGINE.emit('login/social', ctx.request)
+		.then(async data => {
 			let social = data;
-			let msglogin = req.flash('msglogin')[0] || null;
-			res.render('pages/login.pug', { social, msglogin });
+			let msglogin = ctx.flash('msglogin')[0] || null;
+			await ctx.render('pages/login.pug', { social, msglogin });
 		})
-		.catch(error => res.render('error', {message: error.message}))
+		.catch(async error => await ctx.render('error', {message: error.message}))
 });
 
-router.post('/login', function(req, res, next) {
-	ENGINE.emit('login/authorization', req.body)
-		.then(data => {
+router.post('/login', async (ctx) => {
+	await ENGINE.emit('login/authorization', ctx.request.body)
+		.then(async data => {
 			if(data === "/admin"){
-				res.redirect(data);
+				await ctx.redirect(data);
 			} else {
-				req.flash('msglogin', data.msglogin);
-				res.redirect('/login');
+				ctx.flash('msglogin', data.msglogin);
+				await ctx.redirect('/login');
 			}
 		})
-		.catch(error => res.render('error', {message: error.message}))
+		.catch(async error => await res.render('error', {message: error.message}))
 });
 
 module.exports = router;

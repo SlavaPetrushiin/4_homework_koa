@@ -4,7 +4,6 @@ const joi = require('@hapi/joi');
 global.ENGINE = ENGINE;
 
 ENGINE.on('pages/home', response => {
-	console.log(2222)
 	DATABASE.emit('pages/home', response.data)
 		.then(data => {response.reply(data)})
 		.catch(_ => response.replyErr({ message: 'Какая та ошибка!' }));
@@ -36,6 +35,7 @@ ENGINE.on('login/social', response => {
 })
 
 ENGINE.on('login/authorization', response => {
+	console.log(11111)
 	const {	email, passowrd } = response.data;
 	const schema = joi.object().keys({
 		email: joi.string().email().required(),
@@ -73,7 +73,7 @@ ENGINE.on('/admin/skills', response => {
 
 ENGINE.on('/admin/upload', response => {
 	let { name, price } = response.data.body;
-	let userFile = response.data.file;
+	let userFile = response.data.files;
 	if (name.length !== 0 && price.length !== 0){
 		userFile.userName = name;
 		userFile.userPrice = price;

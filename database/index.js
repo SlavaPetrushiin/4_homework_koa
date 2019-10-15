@@ -51,9 +51,10 @@ DATABASE.on('/admin/skills', response => {
 
 DATABASE.on('/admin/upload', response => {
 	let file = response.data;
+	let nameFile = file.photo.name;
 	db.get('products')
 		.push({
-      "src": `./images/products/${file.originalname}`,
+      "src": `./images/products/${nameFile}`,
       "name": file.userName,
       "price": file.userPrice			
 		})

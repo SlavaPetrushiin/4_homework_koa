@@ -54,23 +54,28 @@
       "src": "./images/products/Work9.jpg",
       "name": "Вино вдохновение",
       "price": 600
+    },
+    {
+      "src": "./images/products/Work.jpg",
+      "name": "dorr",
+      "price": "5555555555555555555555555555555"
     }
   ],
   "skills": [
     {
-      "number": "2",
+      "number": "-3",
       "text": "Возраст начала занятий на скрипке"
     },
     {
-      "number": "2",
+      "number": "-3",
       "text": "Концертов отыграл"
     },
     {
-      "number": "2",
+      "number": "-4",
       "text": "Максимальное число городов в туре"
     },
     {
-      "number": "2",
+      "number": "-4",
       "texts": "Лет на сцене в качестве скрипача"
     }
   ]

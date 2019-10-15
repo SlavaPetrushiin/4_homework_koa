@@ -31,7 +31,7 @@ router.get('/', async (ctx) =>  {
 				products,
 				skills,
 				social,
-				msgsemail
+				//msgsemail
 			});			
 		})
 		.catch(error => ctx.render('error', {message: error.message}))

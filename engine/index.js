@@ -35,7 +35,7 @@ ENGINE.on('login/social', response => {
 })
 
 ENGINE.on('login/authorization', response => {
-	console.log(11111)
+	
 	const {	email, passowrd } = response.data;
 	const schema = joi.object().keys({
 		email: joi.string().email().required(),
@@ -73,13 +73,13 @@ ENGINE.on('/admin/skills', response => {
 
 ENGINE.on('/admin/upload', response => {
 	let { name, price } = response.data.body;
-	let userFile = response.data.files;
+	let userFile = response.data.file;
 	if (name.length !== 0 && price.length !== 0){
 		userFile.userName = name;
 		userFile.userPrice = price;
 		DATABASE.emit('/admin/upload', userFile)
 			.then(data => response.reply(data))
-			.catch(_ => response.replyErr({ message: 'Ошибка ' }))
+			.catch(_ => response.replyErr({ message: 'Ошибка' }))
 	} else {
 		response.reply({msgfile : "Заполните все поля"})
 	}

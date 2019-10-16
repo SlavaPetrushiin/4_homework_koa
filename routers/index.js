@@ -1,9 +1,22 @@
 const Router = require('koa-router');
 const router = new Router();
 const koaBody = require('koa-body');
-/*const koaBodyImages = require('koa-body-images');
-const options = {fromKeys: ["public/images/products"], types: ["jpeg", "png"], multiples: true};*/
 const ENGINE = global.ENGINE;
+const multer = require('@koa/multer');
+
+const storage = multer.diskStorage({
+	destination : ( req, file, cb ) =>{
+		cb(null, "public/images/products");
+	},
+	filename: (req, file, cb) =>{
+		cb(null, file.originalname);
+	}	
+});
+
+const upload = multer({
+	storage : storage,
+	limits: {fieldSize: 2 * 1024 * 1024},
+});
 
 /* GET home page. */
 router.get('/', async (ctx) =>  {
@@ -38,14 +51,13 @@ router.get('/admin', async (ctx) => {
 });
 
 //Загрузка фотографии
-router.post('/admin/upload', async (ctx) => {
-	console.log(5555)
+router.post('/admin/upload', upload.single('photo'), async (ctx) => {
 	await ENGINE.emit('/admin/upload', ctx.request)
 		.then(async data => {
 			ctx.flash('msgfile', data.msgfile);
 			await ctx.redirect('/admin');
 		})
-		.catch(async error => await res.render('error', {message: error.message}))
+		.catch(async error => await ctx.render('error', {message: error.message}))
 });
 
 //Загрузка скилов

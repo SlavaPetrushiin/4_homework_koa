@@ -23,12 +23,7 @@ const router = require('./routers');
 
 app.use(static('./public'));
 
-app.use(koaBody({
-	formidable: {
-		uploadDir: 'public/images/products',
-	},
-	multipart: true,
-}));
+app.use(koaBody());
 
 app.keys = ['keys'];
 app.use(session(config.session, app));

@@ -50,8 +50,9 @@ DATABASE.on('/admin/skills', response => {
 });
 
 DATABASE.on('/admin/upload', response => {
+	console.log(response.data)
 	let file = response.data;
-	let nameFile = file.photo.name;
+	let nameFile = file.originalname;
 	db.get('products')
 		.push({
       "src": `./images/products/${nameFile}`,
